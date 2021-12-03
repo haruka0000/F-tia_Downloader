@@ -1,0 +1,11 @@
+bg_color: '#eeeeff'
+filename: '[post_id]_[file_id]'
+font_color: '#000000'
+hint_disp: true
+output_dir: output
+port: 8080
+session_id: ''
+subdir_name: "[fanclub_name]\uFF08[creator_name]\uFF09/[posted_short]_[title]"
+window_size:
+- 1000
+- 800
