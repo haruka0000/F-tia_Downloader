@@ -1,4 +1,4 @@
-# Ft-Downloader
+# F-tia Downloader
 Free Fantia Downloader
 
 # Environment
@@ -8,7 +8,7 @@ Python: 3.8.12
 
 Using Python EEL GUI.
 
-```
+```$ cd python_env
 $ pip install -r requirements.txt
 ```
 or
