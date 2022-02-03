@@ -70,7 +70,7 @@ def scraping(url, session_id):
                             con_dict = {}
                             con_dict["file_type"] = "image"
                             con_dict["file_id"] = photo['show_original_uri'].split("/")[-1]
-                            org_uri_res         = requests.get(urljoin(FANTIA_URL_PREFIX, photo['show_original_uri']), cookies=cookies)
+                            org_uri_res         = requests.get(urljoin(FANTIA_URL_PREFIX, photo['show_original_uri']), cookies=cookies, headers=headers)
                             soup                = BeautifulSoup(org_uri_res.content, 'lxml')
                             con_dict["file_url"] = soup.img.get("src")
                             con_dict["thumb_url"] = photo['url']['thumb']
@@ -96,7 +96,7 @@ def download(url, output_path, session_id=None, interval_sec=0.5):
     time.sleep(interval_sec)
     cookies = {'_session_id': session_id.strip()}
     try:
-        res = requests.get(url, cookies=cookies)
+        res = requests.get(url, cookies=cookies, headers=headers)
         with open(output_path, 'wb') as download_file:
             download_file.write(res.content)
         return True
@@ -106,7 +106,7 @@ def download(url, output_path, session_id=None, interval_sec=0.5):
 def download_thumb_img(url, session_id=None, interval_sec=2):
     cookies = {'_session_id': session_id.strip()}
     try:
-        res = requests.get(url, cookies=cookies)
+        res = requests.get(url, cookies=cookies, headers=headers)
         thumb_img = Image.open(io.BytesIO(res.content))
         thumb_img = thumb_img.convert('RGB')
     except:

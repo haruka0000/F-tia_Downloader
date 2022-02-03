@@ -1,7 +1,0 @@
-eel
-lxml
-beautifulsoup4
-requests
-pyinstaller
-pillow
-pyyaml
