@@ -71,7 +71,7 @@ def get_layout(contents=[], is_first=False, size_label=(20,1), size_box=(50,1), 
     font_small = (font[0], int(font[1]*0.9))
     layout = [
         [sg.Text('F-tia Downloader', font=(font[0], int(font[1]*2)), size=(30, 1))],
-        [sg.Combo(values=sg.theme_list(), size=(20, 1), key='_theme_', enable_events=True, readonly=True, default_value=settings['theme'], )],
+        [sg.Text('Color Theme:', size=size_label, font=font), sg.Combo(values=sg.theme_list(), size=(20, 1), key='_theme_', enable_events=True, readonly=True, default_value=settings['theme'], )],
         [sg.Checkbox("Tips", key='_cb-hint_', enable_events=True, default=settings['hint_disp'])],
         [sg.Text('Setting Page:',               size=size_label, font=font),
          sg.Input('chrome://settings/cookies/detail?site=fantia.jp', disabled=True, font=font, size=size_box),
