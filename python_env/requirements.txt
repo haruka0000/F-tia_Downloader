@@ -1,7 +1,8 @@
-eel
+pysimplegui
 lxml
 beautifulsoup4
 requests
 pyinstaller
 pillow
 pyyaml
+tqdm

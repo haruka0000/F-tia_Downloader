@@ -1,15 +1,13 @@
-import os
 import requests
 import time
 from bs4 import BeautifulSoup
 import json
-from configparser import ConfigParser
-from http.cookiejar import CookieJar
-from urllib.parse import urljoin, urlparse
-from urllib.request import build_opener, HTTPCookieProcessor
+from urllib.parse import urljoin
 import io
 from datetime import datetime
 from PIL import Image
+import json
+
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"
 }
@@ -47,14 +45,37 @@ def scraping(url, session_id):
         "contents":         []
     }
 
+    blog_recent_posts = res_dict["post"]['fanclub']['recent_posts']
+    post_data['blog_images'] = []
+    blog_img_id = 1
+    for recent_post in blog_recent_posts:
+        if recent_post.get('comment') != None:
+            try:
+                comment = json.loads(recent_post['comment'])
+                for line in comment['ops']:
+                    if line.get('insert') != None:
+                        insert = line.get('insert')
+                        if type(insert) == dict:
+                            if insert.get('image') != None:
+                                blog_image = str(insert.get('image'))
+                                con_dict = {}
+                                con_dict["file_type"]       = "blog_image"
+                                con_dict["file_id"]         = 'blog'
+                                con_dict["file_url"]        = blog_image
+                                con_dict["fmt"]             = blog_image.split(".")[-1]
+                                con_dict["thumb"]           = download_thumb_img(con_dict["file_url"], session_id)
+                                post_data['blog_images'].append(con_dict)
+                                blog_img_id += 1
+            except:
+                print("Images are not included.")
     if res_dict["post"].get("thumb") != None:
         ## Thumbnails
         post_data["thumb"] = {}
-        post_data["thumb"]["file_type"] = "image"
+        post_data["thumb"]["file_type"] = "thumbnail"
         post_data["thumb"]["file_id"]   = "thumb"
         post_data["thumb"]["thumb_url"] = res_dict["post"]["thumb"]["thumb"]
         post_data["thumb"]["file_url"]  = res_dict["post"]["thumb"]["original"]
-        post_data["thumb"]["thumb"]     = download_thumb_img(post_data["thumb"]["thumb_url"], session_id, interval_sec=0.1)
+        post_data["thumb"]["thumb"]     = download_thumb_img(post_data["thumb"]["thumb_url"], session_id)
         post_data["thumb"]["fmt"]       = str(post_data["thumb"]["file_url"]).split(".")[-1].split("?")[0]
 
     if res_dict['post'].get('post_contents') != None:
@@ -75,7 +96,7 @@ def scraping(url, session_id):
                             con_dict["file_url"] = soup.img.get("src")
                             con_dict["thumb_url"] = photo['url']['thumb']
                             con_dict["fmt"]     = str(con_dict["file_url"]).split(".")[-1].split("?")[0]
-                            con_dict["thumb"] = download_thumb_img(con_dict["thumb_url"], session_id, interval_sec=0.1)
+                            con_dict["thumb"] = download_thumb_img(con_dict["thumb_url"], session_id)
                             post_data["contents"].append(con_dict.copy())
 
                 ## For Files
@@ -103,13 +124,13 @@ def download(url, output_path, session_id=None, interval_sec=0.5):
     except:
         return False
 
-def download_thumb_img(url, session_id=None, interval_sec=2):
+def download_thumb_img(url, session_id=None, interval_sec=0.1):
     cookies = {'_session_id': session_id.strip()}
     try:
         res = requests.get(url, cookies=cookies, headers=headers)
         thumb_img = Image.open(io.BytesIO(res.content))
         thumb_img = thumb_img.convert('RGB')
     except:
-        blank = Image.new("RGB", (256,256), color=(73, 109, 137))
+        blank = Image.new("RGB", (256,256), color=(255, 255, 255))
         thumb_img = blank
     return thumb_img
